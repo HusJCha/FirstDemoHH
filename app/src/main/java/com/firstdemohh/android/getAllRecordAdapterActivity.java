@@ -1,8 +1,10 @@
 package com.firstdemohh.android;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,61 +16,65 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class getAllRecordAdapterActivity extends BaseAdapter
+public class getAllRecordAdapterActivity extends RecyclerView.Adapter<getAllRecordAdapterActivity.MyViewHolder>
 {
-
     Context con;
-    ArrayList<HashMap<String,Object>> list;
-    LayoutInflater li;
+    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
 
     public getAllRecordAdapterActivity(Context context, ArrayList< HashMap<String,Object>> array )
     {
         con = context;
         list = array;
-        li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-
     @Override
-    public int getCount() {
-        return list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, final ViewGroup parent)
+    public getAllRecordAdapterActivity.MyViewHolder onCreateViewHolder( ViewGroup parent, int viewType)
     {
-        convertView = li.inflate(R.layout.activity_get_all_record,null);
-        TextView tv_edit = convertView.findViewById(R.id.ed_edit_book);
-        TextView tv_delete = convertView.findViewById(R.id.ed_del_book);
-        TextView tv_list = convertView.findViewById(R.id.tv_bnm);
-        ImageView img_bimg = convertView.findViewById(R.id.bimg);
-        HashMap<String,Object> map =new HashMap<>();
-        map = list.get(position);
+        View itemview = LayoutInflater.from (parent.getContext()).inflate(R.layout.activity_get_all_record,null);
+        return new MyViewHolder(itemview);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull getAllRecordAdapterActivity.MyViewHolder holder, final int position) {
+        HashMap<String,Object> map = list.get(position);
         final String bnm = map.get("bnm").toString();
         byte[] blob = (byte[])map.get("bimg");
-        tv_list.setText(bnm);
-        img_bimg.setImageBitmap(Utils.getImage(blob));
-        tv_edit.setOnClickListener(new View.OnClickListener() {
+        holder.tv_bnm.setText(bnm);
+        holder.tv_bnm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BookActivity.open_list(position);
+            }
+        });
+        holder.img_bimg.setImageBitmap(Utils.getImage(blob));
+        holder.tv_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BookActivity.edit_click(bnm);
             }
         });
-        tv_delete.setOnClickListener(new View.OnClickListener() {
+        holder.tv_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BookActivity.delete_click(bnm,position);
             }
         });
-        return convertView;
+    }
+
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder
+    {
+        ImageView img_bimg;
+        TextView tv_bnm,tv_edit,tv_delete;
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            img_bimg= itemView.findViewById(R.id.bimg);
+            tv_bnm = itemView.findViewById(R.id.tv_bnm);
+            tv_edit = itemView.findViewById(R.id.ed_edit_book);
+            tv_delete = itemView.findViewById(R.id.ed_del_book);
+        }
     }
 }

@@ -9,11 +9,23 @@
     tools:showIn="@layout/app_bar_book">
 
 
-    <ListView
-        android:id="@+id/lv_books"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rec_view_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/btn_sort"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
-    </ListView>
+        android:layout_alignParentBottom="true"
+        android:textColor="#000"
+        android:background="#fff"
+        android:text="Sort"
+        android:textAllCaps="false"
+        />
 
 </RelativeLayout>

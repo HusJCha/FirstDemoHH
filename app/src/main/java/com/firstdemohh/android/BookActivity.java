@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -46,9 +49,11 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
     TextView tv_edit,tv_delete,tv_bnm,tv_nav_unm;
     Button btn_search,btn_sort;
     FrameLayout footerLayout;
+    static RecyclerView recyclerView;
     EditText ed_search;
     LayoutInflater li;
     View convertView,nav_convertview;
+    getAllRecordAdapterActivity adapter;
     static Context con;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,27 +66,18 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
         nav_convertview = li.inflate(R.layout.nav_header_book,null);
         footerLayout = (FrameLayout)getLayoutInflater().inflate(R.layout.footer_layout,null);
         findviewbyid();
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         unm=HomeActivity.UNM;
         tv_nav_unm.setText(unm);
         list = new ArrayList< HashMap<String,Object>>();
         con = BookActivity.this;
         dbh = new DBHelper(this,"Books",null,1);
         list = dbh.getAllRecord(unm);
+        adapter = new getAllRecordAdapterActivity(this,list);
+        recyclerView.setAdapter(adapter);
         book_list = dbh.getAllBook(unm);
-        lv_books.setAdapter(new getAllRecordAdapterActivity(this,list));
-        lv_books.addFooterView(footerLayout);
-        lv_books.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view,int pos, long l)
-            {
-                bnm = book_list.get(pos).toString();
-                Intent in =new Intent(BookActivity.this,BookDetailActivity.class);
-                in.putExtra("status","open");
-                in.putExtra("bnm",bnm);
-                startActivity(in);
-            }
-        });
         fab.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -101,27 +97,6 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                     ed_search.findFocus();
                     btn_search.setVisibility(View.GONE);
                 }
-//                else
-//                {
-//                    String str_search = ed_search.getText().toString();
-//                    if (str_search.equals(""))
-//                    {
-//                        onBackPressed();
-//                    }
-//                    else
-//                    {
-//                        Integer i = book_list.size();
-//                        for(int j=0; j < i ; j++)
-//                        {
-//                            String book = book_list.get(j);
-//                            if(book.equals(str_search))
-//                            {
-//                                list = dbh.searcheBook(unm,book);
-//                                lv_books.setAdapter(new getAllRecordAdapterActivity(con,list));
-//                            }
-//                        }
-//                    }
-//                }
             }
         });
         btn_sort.setOnClickListener(new View.OnClickListener() {
@@ -130,13 +105,13 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                 if (sort.equals("DESC"))
                 {
                     list = dbh.sortBook(unm,sort);
-                    lv_books.setAdapter(new getAllRecordAdapterActivity(con,list));
+                    recyclerView.setAdapter(new getAllRecordAdapterActivity(con,list));
                     sort = "ASC";
                 }
                 else
                 {
                     list = dbh.sortBook(unm,sort);
-                    lv_books.setAdapter(new getAllRecordAdapterActivity(con,list));
+                    recyclerView.setAdapter(new getAllRecordAdapterActivity(con,list));
                     sort = "DESC";
                 }
             }
@@ -154,7 +129,7 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                 if(str_search.equals(""))
                 {
                     list = dbh.getAllRecord(unm);
-                    lv_books.setAdapter(new getAllRecordAdapterActivity(con, list));
+                    recyclerView.setAdapter(new getAllRecordAdapterActivity(con, list));
                 }
                 else {
                     Integer in = str_search.length();
@@ -171,7 +146,7 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                                 list1.add(map);
                                 btn_sort.setVisibility(View.GONE);
                         }
-                        lv_books.setAdapter(new getAllRecordAdapterActivity(con, list1));
+                        recyclerView.setAdapter(new getAllRecordAdapterActivity(con, list1));
 
                     }
                 }
@@ -211,7 +186,7 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                 if (result == true)
                 {
                     list = dbh.getAllRecord(unm);
-                    lv_books.setAdapter(new getAllRecordAdapterActivity(con,list));
+                    recyclerView.setAdapter(new getAllRecordAdapterActivity(con,list));
                     Toast.makeText(con,"Book Deleted",Toast.LENGTH_SHORT).show();
                 }
                 else
@@ -233,14 +208,14 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
     {
         toolbar = findViewById(R.id.toolbar);
         fab =  findViewById(R.id.fab);
-        lv_books = findViewById(R.id.lv_books);
         tv_edit = convertView.findViewById(R.id.ed_edit_book);
         tv_delete = convertView.findViewById(R.id.ed_del_book);
         tv_bnm = convertView.findViewById(R.id.tv_bnm);
         tv_nav_unm = nav_convertview.findViewById(R.id.nav_unm);
         btn_search = findViewById(R.id.btn_search);
         ed_search = findViewById(R.id.ed_search);
-        btn_sort = footerLayout.findViewById(R.id.btn_sort);
+        btn_sort = findViewById(R.id.btn_sort);
+        recyclerView = findViewById(R.id.rec_view_list);
     }
 
     @Override
@@ -256,7 +231,7 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
                 btn_search.setVisibility(View.VISIBLE);
                 btn_sort.setVisibility(View.VISIBLE);
                 list = dbh.getAllRecord(unm);
-                lv_books.setAdapter(new getAllRecordAdapterActivity(con,list));
+                recyclerView.setAdapter(new getAllRecordAdapterActivity(con,list));
 
         }
         else if (drawer.isDrawerOpen(GravityCompat.START))
@@ -334,4 +309,12 @@ public class BookActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    public static void open_list(int position)
+    {
+        bnm = book_list.get(position).toString();
+                Intent in =new Intent(con,BookDetailActivity.class);
+                in.putExtra("status","open");
+                in.putExtra("bnm",bnm);
+                con.startActivity(in);
+    }
 }

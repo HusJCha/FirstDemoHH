@@ -52,6 +52,7 @@ public class BookDetailActivity extends AppCompatActivity
             tv_bnm.setVisibility(View.VISIBLE);
             tv_bprice.setVisibility(View.VISIBLE);
             tv_bdate.setVisibility(View.VISIBLE);
+            edit_bimg.setVisibility(View.GONE);
             tv_bnm.setText(bnm);
             book_record = dbh.getBook(bnm);
             Object bprice = book_record.get("bprice");
@@ -69,6 +70,7 @@ public class BookDetailActivity extends AppCompatActivity
             ed_bprice.setVisibility(View.VISIBLE);
             btn_update.setVisibility(View.VISIBLE);
             tv_bdate_title.setVisibility(View.GONE);
+            edit_bimg.setVisibility(View.GONE);
             ed_bnm.setText(bnm);
             og_bnm=ed_bnm.getText().toString();
             book_record = dbh.getBook(bnm);
@@ -148,13 +150,13 @@ public class BookDetailActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)  {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            selectedImageUri = result.getUri();
             if (resultCode == RESULT_OK) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                selectedImageUri = result.getUri();
                 Toast.makeText(getApplicationContext(),selectedImageUri.toString(),Toast.LENGTH_SHORT).show();
                 bimg.setImageURI(selectedImageUri);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+
             }
         }
     }

@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +44,7 @@ public class AddBookActivity extends AppCompatActivity
     DBHelper dbh;
     Integer i =0;
     BookDetails book;
+    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
